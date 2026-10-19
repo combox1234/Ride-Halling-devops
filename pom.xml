@@ -34,7 +34,9 @@
         <module>services/common-dto</module>
         <module>services/auth-service</module>
         <module>services/passenger-service</module>
+        <module>services/driver-service</module>
         <module>services/ride-service</module>
+        <module>services/matching-service</module>
     </modules>
 
     <dependencyManagement>
@@ -75,7 +77,17 @@
             </dependency>
             <dependency>
                 <groupId>com.ridehailing</groupId>
+                <artifactId>driver-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ridehailing</groupId>
                 <artifactId>ride-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ridehailing</groupId>
+                <artifactId>matching-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

@@ -19,6 +19,22 @@ public record RideRecord(
     Instant requestedAt,
     Instant completedAt
 ) {
+    public RideRecord withStatus(RideStatus newStatus) {
+        return new RideRecord(
+            this.id,
+            this.passengerId,
+            this.driverId,
+            this.pickupLocation,
+            this.dropoffLocation,
+            this.estimatedFare,
+            this.finalFare,
+            newStatus,
+            this.idempotencyKey,
+            this.requestedAt,
+            this.completedAt
+        );
+    }
+
     public RideRecord withStatusAndDriver(RideStatus newStatus, Long driverId) {
         return new RideRecord(
             this.id,

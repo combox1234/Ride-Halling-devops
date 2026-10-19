@@ -161,4 +161,40 @@ class RideServiceTest {
             assertThat(cancelSuccesses.get()).isGreaterThanOrEqualTo(1);
         }
     }
+
+    @Test
+    @DisplayName("Should transition to SEARCHING when no nearby driver is available")
+    void shouldTransitionToSearchingWhenNoDriverFound() {
+        RideService serviceWithNoDrivers = new RideService(
+            rideRepository,
+            stateMachine,
+            (rideId, pickupLocation) -> java.util.Optional.empty()
+        );
+
+        RideBookingRequest request = new RideBookingRequest(101L, pickup, dropoff);
+        RideResponse response = serviceWithNoDrivers.requestRide(request);
+
+        assertThat(response.id()).isNotNull();
+        assertThat(response.driverId()).isNull();
+        assertThat(response.status()).isEqualTo(RideStatus.SEARCHING);
+    }
+
+    @Test
+    @DisplayName("Should assign specific matched driver returned by matching client")
+    void shouldAssignMatchedDriverFromClient() {
+        RideService serviceWithMatchedDriver = new RideService(
+            rideRepository,
+            stateMachine,
+            (rideId, pickupLocation) -> java.util.Optional.of(
+                new com.ridehailing.common.dto.DriverCandidateDto(305L, 0.8, pickupLocation.latitude(), pickupLocation.longitude(), 4.9)
+            )
+        );
+
+        RideBookingRequest request = new RideBookingRequest(101L, pickup, dropoff);
+        RideResponse response = serviceWithMatchedDriver.requestRide(request);
+
+        assertThat(response.id()).isNotNull();
+        assertThat(response.driverId()).isEqualTo(305L);
+        assertThat(response.status()).isEqualTo(RideStatus.DRIVER_ASSIGNED);
+    }
 }

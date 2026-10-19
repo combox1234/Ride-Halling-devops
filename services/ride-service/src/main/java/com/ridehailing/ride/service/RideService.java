@@ -1,7 +1,10 @@
 package com.ridehailing.ride.service;
 
+import com.ridehailing.common.dto.DriverCandidateDto;
 import com.ridehailing.common.dto.LocationDto;
 import com.ridehailing.common.dto.RideStatus;
+import com.ridehailing.ride.client.DefaultDriverMatchingClient;
+import com.ridehailing.ride.client.DriverMatchingClient;
 import com.ridehailing.ride.dto.RideBookingRequest;
 import com.ridehailing.ride.dto.RideResponse;
 import com.ridehailing.ride.model.RideRecord;
@@ -13,18 +16,29 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class RideService {
 
-    private static final Long MOCK_DISPATCHED_DRIVER_ID = 201L;
     private final RideRepository rideRepository;
     private final RideStateMachine stateMachine;
+    private final DriverMatchingClient matchingClient;
 
-    public RideService(RideRepository rideRepository, RideStateMachine stateMachine) {
+    @org.springframework.beans.factory.annotation.Autowired
+    public RideService(
+        RideRepository rideRepository,
+        RideStateMachine stateMachine,
+        @org.springframework.beans.factory.annotation.Autowired(required = false) DriverMatchingClient matchingClient
+    ) {
         this.rideRepository = rideRepository;
         this.stateMachine = stateMachine;
+        this.matchingClient = matchingClient != null ? matchingClient : new DefaultDriverMatchingClient();
+    }
+
+    public RideService(RideRepository rideRepository, RideStateMachine stateMachine) {
+        this(rideRepository, stateMachine, new DefaultDriverMatchingClient());
     }
 
     @Transactional
@@ -48,16 +62,28 @@ public class RideService {
         );
         RideRecord saved = rideRepository.save(initialRide);
 
-        // 2. Vertical slice: simulate mock driver dispatch to DRIVER_ASSIGNED atomically
-        AtomicReference<RideRecord> assignedRef = new AtomicReference<>();
-        rideRepository.updateAtomically(saved.id(), current -> {
-            stateMachine.validateTransition(current.status(), RideStatus.DRIVER_ASSIGNED);
-            RideRecord assigned = current.withStatusAndDriver(RideStatus.DRIVER_ASSIGNED, MOCK_DISPATCHED_DRIVER_ID);
-            assignedRef.set(assigned);
-            return assigned;
-        });
+        // 2. Dispatch/Match driver via matching service client
+        Optional<DriverCandidateDto> candidateOpt = matchingClient.findDriverForRide(saved.id(), request.pickupLocation());
+        AtomicReference<RideRecord> updatedRef = new AtomicReference<>();
 
-        return toResponse(assignedRef.get() != null ? assignedRef.get() : saved);
+        if (candidateOpt.isPresent()) {
+            Long driverId = candidateOpt.get().driverId();
+            rideRepository.updateAtomically(saved.id(), current -> {
+                stateMachine.validateTransition(current.status(), RideStatus.DRIVER_ASSIGNED);
+                RideRecord assigned = current.withStatusAndDriver(RideStatus.DRIVER_ASSIGNED, driverId);
+                updatedRef.set(assigned);
+                return assigned;
+            });
+        } else {
+            rideRepository.updateAtomically(saved.id(), current -> {
+                stateMachine.validateTransition(current.status(), RideStatus.SEARCHING);
+                RideRecord searching = current.withStatus(RideStatus.SEARCHING);
+                updatedRef.set(searching);
+                return searching;
+            });
+        }
+
+        return toResponse(updatedRef.get() != null ? updatedRef.get() : saved);
     }
 
     @Transactional

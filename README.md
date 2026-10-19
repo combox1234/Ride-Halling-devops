@@ -64,6 +64,7 @@ Full-stack observability is built-in from the ground up:
 - [**Implementation Plan (`docs/IMPLEMENTATION_PLAN.md`)**](docs/IMPLEMENTATION_PLAN.md): Step-by-step 14-phase roadmap (Phase 0 through Phase 13), strict acceptance criteria, early vertical slice, exact PowerShell verification commands, and viva preparation deliverables.
 - [**Phase 2: Vertical Slice & Security (`docs/PHASE_2_VERTICAL_SLICE.md`)**](docs/PHASE_2_VERTICAL_SLICE.md): Early vertical slice trip journey, cryptographic identity verification, and role hardening.
 - [**Phase 3: Relational Persistence & Migrations (`docs/PHASE_3_PERSISTENCE.md`)**](docs/PHASE_3_PERSISTENCE.md): MySQL schemas, Flyway migrations, Spring Data JPA entities, and database concurrency controls.
+- [**Phase 4: Geospatial Driver Tracking & Proximity Matching (`docs/PHASE_4_GEOSPATIAL_MATCHING.md`)**](docs/PHASE_4_GEOSPATIAL_MATCHING.md): Redis geospatial index (`GEOADD`/`GEOSEARCH`), companion 60s heartbeats, stale eviction, and atomic dispatch locks.
 
 ---
 
