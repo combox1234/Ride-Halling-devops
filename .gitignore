@@ -1,0 +1,66 @@
+# Target and build directories
+target/
+**/target/
+*.class
+
+# Package files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Log files
+*.log
+logs/
+**/logs/
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+**/out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+**/bin/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment and Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pub
+secrets/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+
+# Ansible
+*.retry
+
+# Docker
+docker-compose.override.yml
