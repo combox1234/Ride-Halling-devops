@@ -136,4 +136,30 @@ class RideEventsTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("amount cannot be negative");
     }
+
+    @Test
+    @DisplayName("Should create valid RideCancelledEvent")
+    void shouldCreateRideCancelledEvent() {
+        Instant now = Instant.now();
+        RideCancelledEvent event = new RideCancelledEvent(1L, 100L, 200L, "Passenger cancelled", now);
+
+        assertThat(event.rideId()).isEqualTo(1L);
+        assertThat(event.passengerId()).isEqualTo(100L);
+        assertThat(event.driverId()).isEqualTo(200L);
+        assertThat(event.reason()).isEqualTo("Passenger cancelled");
+        assertThat(event.cancelledAt()).isEqualTo(now);
+    }
+
+    @Test
+    @DisplayName("Should verify AmqpConstants exchange, queue, and routing key definitions")
+    void shouldVerifyAmqpConstants() {
+        assertThat(com.ridehailing.common.constant.AmqpConstants.RIDE_TOPIC_EXCHANGE).isEqualTo("ride.topic.exchange");
+        assertThat(com.ridehailing.common.constant.AmqpConstants.BILLING_DIRECT_EXCHANGE).isEqualTo("billing.direct.exchange");
+        assertThat(com.ridehailing.common.constant.AmqpConstants.DLX_TOPIC_EXCHANGE).isEqualTo("dlx.topic.exchange");
+        assertThat(com.ridehailing.common.constant.AmqpConstants.QUEUE_RIDE_MATCHING).isEqualTo("q.ride.matching");
+        assertThat(com.ridehailing.common.constant.AmqpConstants.QUEUE_RIDE_NOTIFICATION).isEqualTo("q.ride.notification");
+        assertThat(com.ridehailing.common.constant.AmqpConstants.QUEUE_RIDE_BILLING).isEqualTo("q.ride.billing");
+        assertThat(com.ridehailing.common.constant.AmqpConstants.QUEUE_DEAD_LETTER).isEqualTo("q.dead-letter");
+        assertThat(com.ridehailing.common.constant.AmqpConstants.ROUTING_KEY_DLX_FAILED).isEqualTo("dlx.failed");
+    }
 }

@@ -37,6 +37,7 @@
         <module>services/driver-service</module>
         <module>services/ride-service</module>
         <module>services/matching-service</module>
+        <module>services/notification-service</module>
     </modules>
 
     <dependencyManagement>
@@ -88,6 +89,11 @@
             <dependency>
                 <groupId>com.ridehailing</groupId>
                 <artifactId>matching-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ridehailing</groupId>
+                <artifactId>notification-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

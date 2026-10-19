@@ -9,6 +9,11 @@ import com.ridehailing.ride.dto.RideBookingRequest;
 import com.ridehailing.ride.dto.RideResponse;
 import com.ridehailing.ride.model.RideRecord;
 import com.ridehailing.ride.repository.RideRepository;
+import com.ridehailing.common.event.RideCancelledEvent;
+import com.ridehailing.common.event.RideCompletedEvent;
+import com.ridehailing.common.event.RideRequestedEvent;
+import com.ridehailing.common.event.RideStartedEvent;
+import com.ridehailing.ride.publisher.RideEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,20 +30,31 @@ public class RideService {
     private final RideRepository rideRepository;
     private final RideStateMachine stateMachine;
     private final DriverMatchingClient matchingClient;
+    private final RideEventPublisher eventPublisher;
 
     @org.springframework.beans.factory.annotation.Autowired
     public RideService(
         RideRepository rideRepository,
         RideStateMachine stateMachine,
-        @org.springframework.beans.factory.annotation.Autowired(required = false) DriverMatchingClient matchingClient
+        @org.springframework.beans.factory.annotation.Autowired(required = false) DriverMatchingClient matchingClient,
+        @org.springframework.beans.factory.annotation.Autowired(required = false) RideEventPublisher eventPublisher
     ) {
         this.rideRepository = rideRepository;
         this.stateMachine = stateMachine;
         this.matchingClient = matchingClient != null ? matchingClient : new DefaultDriverMatchingClient();
+        this.eventPublisher = eventPublisher != null ? eventPublisher : new RideEventPublisher(null);
+    }
+
+    public RideService(
+        RideRepository rideRepository,
+        RideStateMachine stateMachine,
+        DriverMatchingClient matchingClient
+    ) {
+        this(rideRepository, stateMachine, matchingClient, new RideEventPublisher(null));
     }
 
     public RideService(RideRepository rideRepository, RideStateMachine stateMachine) {
-        this(rideRepository, stateMachine, new DefaultDriverMatchingClient());
+        this(rideRepository, stateMachine, new DefaultDriverMatchingClient(), new RideEventPublisher(null));
     }
 
     @Transactional
@@ -83,7 +99,17 @@ public class RideService {
             });
         }
 
-        return toResponse(updatedRef.get() != null ? updatedRef.get() : saved);
+        RideRecord finalRecord = updatedRef.get() != null ? updatedRef.get() : saved;
+        eventPublisher.publishRideRequested(new RideRequestedEvent(
+            finalRecord.id(),
+            finalRecord.passengerId(),
+            finalRecord.pickupLocation(),
+            finalRecord.dropoffLocation(),
+            finalRecord.estimatedFare(),
+            finalRecord.requestedAt()
+        ), null);
+
+        return toResponse(finalRecord);
     }
 
     @Transactional
@@ -96,7 +122,15 @@ public class RideService {
             return updated;
         }).orElseThrow(() -> new NoSuchElementException("Ride not found with ID: " + rideId));
 
-        return toResponse(updatedRef.get());
+        RideRecord started = updatedRef.get();
+        eventPublisher.publishRideStarted(new RideStartedEvent(
+            started.id(),
+            started.driverId() != null ? started.driverId() : 0L,
+            started.passengerId(),
+            Instant.now()
+        ), null);
+
+        return toResponse(started);
     }
 
     @Transactional
@@ -119,7 +153,17 @@ public class RideService {
             return completed;
         }).orElseThrow(() -> new NoSuchElementException("Ride not found with ID: " + rideId));
 
-        return toResponse(resultRef.get());
+        RideRecord completed = resultRef.get();
+        eventPublisher.publishRideCompleted(new RideCompletedEvent(
+            completed.id(),
+            completed.passengerId(),
+            completed.driverId() != null ? completed.driverId() : 0L,
+            completed.finalFare() != null ? completed.finalFare() : completed.estimatedFare(),
+            completed.idempotencyKey() != null ? completed.idempotencyKey() : ("PAY-" + completed.id()),
+            completed.completedAt() != null ? completed.completedAt() : Instant.now()
+        ), null);
+
+        return toResponse(completed);
     }
 
     @Transactional
@@ -132,7 +176,16 @@ public class RideService {
             return cancelled;
         }).orElseThrow(() -> new NoSuchElementException("Ride not found with ID: " + rideId));
 
-        return toResponse(updatedRef.get());
+        RideRecord cancelled = updatedRef.get();
+        eventPublisher.publishRideCancelled(new RideCancelledEvent(
+            cancelled.id(),
+            cancelled.passengerId(),
+            cancelled.driverId(),
+            "USER_CANCELLED",
+            Instant.now()
+        ), null);
+
+        return toResponse(cancelled);
     }
 
     public RideResponse getRide(Long rideId) {

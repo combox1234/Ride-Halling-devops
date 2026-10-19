@@ -33,6 +33,9 @@ class RideControllerTest {
     @Autowired
     private RideRepository rideRepository;
 
+    @org.springframework.boot.test.mock.mockito.MockBean
+    private org.springframework.amqp.rabbit.core.RabbitTemplate rabbitTemplate;
+
     private final LocationDto pickup = new LocationDto(37.7749, -122.4194, "Market St, SF");
     private final LocationDto dropoff = new LocationDto(37.7833, -122.4167, "Union Square, SF");
 

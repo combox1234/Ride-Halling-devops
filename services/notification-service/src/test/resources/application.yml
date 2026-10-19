@@ -1,0 +1,10 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: notification-service
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
