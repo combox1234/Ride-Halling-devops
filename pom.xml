@@ -42,6 +42,7 @@
         <module>services/billing-service</module>
         <module>services/rating-service</module>
         <module>services/reporting-service</module>
+        <module>services/api-gateway</module>
     </modules>
 
     <dependencyManagement>
@@ -118,6 +119,11 @@
             <dependency>
                 <groupId>com.ridehailing</groupId>
                 <artifactId>reporting-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ridehailing</groupId>
+                <artifactId>api-gateway</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
