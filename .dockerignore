@@ -1,0 +1,44 @@
+# Git and VCS
+.git
+.gitignore
+
+# IDE and Editor Files
+.idea
+.vscode
+*.iml
+*.iws
+*.ipr
+
+# Agent and IDE internal files
+.agent
+.agents
+.gemini
+.gsd
+GSD-STYLE.md
+PROJECT_RULES.md
+VERSION
+adapters
+model_capabilities.yaml
+scripts
+
+# Build outputs
+**/target/
+**/*.class
+**/*.jar
+**/*.war
+
+# Environment and Secrets
+.env
+.env.local
+*.pem
+*.key
+
+# Documentation and Media
+docs/
+*.md
+!README.md
+
+# Logs and Temp
+*.log
+tmp/
+temp/

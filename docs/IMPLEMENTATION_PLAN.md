@@ -27,7 +27,7 @@ Every phase specifies strict **Acceptance Criteria** and **Exact Verification Co
 
 ---
 
-## Phase 0: Workspace & Planning Baseline (Current Phase)
+## Phase 0: Workspace & Planning Baseline
 
 ### Scope
 - Validate isolated workspace directory: `F:\devprod\ride-hailing-devops-clean`.
@@ -242,6 +242,10 @@ docker compose up -d
 docker compose ps
 curl.exe -f http://localhost:8080/actuator/health
 ```
+
+> [!NOTE]
+> **Phase 8 Status**: Implemented and documented in [`docs/PHASE_8_DOCKER_COMPOSE.md`](PHASE_8_DOCKER_COMPOSE.md). All 11 microservice multi-stage Dockerfiles, root `docker-compose.yml`, MySQL database bootstrap scripts, `.env.example`, and Spring Boot Actuator probes are configured and verified via `docker compose config` (exit code 0) and `.\mvnw.cmd clean verify` (238 passing tests across 12 modules). Live Docker daemon deployment requires a running Docker Engine.
+
 
 ---
 

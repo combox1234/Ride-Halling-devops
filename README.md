@@ -68,6 +68,7 @@ Full-stack observability is built-in from the ground up:
 - [**Phase 5: Asynchronous Messaging & Choreography (`docs/PHASE_5_RABBITMQ_MESSAGING.md`)**](docs/PHASE_5_RABBITMQ_MESSAGING.md): RabbitMQ exchanges, topic routing, dead-letter queue recovery (`RepublishMessageRecoverer`), and decoupled notification dispatch.
 - [**Phase 6: Pricing, Idempotent Billing, Rating & Reporting (`docs/PHASE_6_DOMAIN_SERVICES.md`)**](docs/PHASE_6_DOMAIN_SERVICES.md): Dynamic fare calculation, idempotent payment transactions, mock payment provider, post-trip ratings, and operational reporting data marts.
 - [**Phase 7: API Gateway & Security Perimeter (`docs/PHASE_7_API_GATEWAY.md`)**](docs/PHASE_7_API_GATEWAY.md): Reactive Spring Cloud Gateway, JWT authentication perimeter, identity header stripping, claim propagation, Redis token-bucket rate limiting, and CORS.
+- [**Phase 8: Multi-Stage Containerization & Local Topology (`docs/PHASE_8_DOCKER_COMPOSE.md`)**](docs/PHASE_8_DOCKER_COMPOSE.md): Production-grade multi-stage Dockerfiles, Docker Compose topology (11 microservices + MySQL + Redis + RabbitMQ), database bootstrapping, and network isolation.
 
 ---
 
