@@ -14,6 +14,8 @@ public final class AmqpConstants {
     public static final String QUEUE_RIDE_MATCHING = "q.ride.matching";
     public static final String QUEUE_RIDE_NOTIFICATION = "q.ride.notification";
     public static final String QUEUE_RIDE_BILLING = "q.ride.billing";
+    public static final String QUEUE_RIDE_REPORTING = "q.ride.reporting";
+    public static final String QUEUE_BILLING_REPORTING = "q.billing.reporting";
     public static final String QUEUE_DEAD_LETTER = "q.dead-letter";
 
     // Routing Keys
@@ -24,6 +26,7 @@ public final class AmqpConstants {
     public static final String ROUTING_KEY_RIDE_CANCELLED = "ride.cancelled";
     public static final String ROUTING_KEY_RIDE_ALL = "ride.*";
     public static final String ROUTING_KEY_BILLING_PROCESSED = "billing.processed";
+    public static final String ROUTING_KEY_BILLING_ALL = "billing.*";
     public static final String ROUTING_KEY_DLX_FAILED = "dlx.failed";
     public static final String ROUTING_KEY_DLX_ALL = "dlx.#";
 }
